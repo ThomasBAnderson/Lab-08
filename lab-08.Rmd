@@ -47,12 +47,21 @@ weather %>%
 
 ```{r}
 
+weather_noNA <- weather %>%
+  filter(!is.na(RainTomorrow))
+
 ```
 
 2. Which cities are the ones with more rain days? To do this, let's analyze the `RainToday` variable. 
 
 ```{r}
 
+weather %>%
+  group_by(Location) %>%
+  filter(RainToday == "Yes") %>%
+  count() %>%
+  arrange(desc(n))
+  
 ```
 
 # Exercise 2: Logistic regression
@@ -70,6 +79,12 @@ weather_Portland <- weather_noNA %>%
 
 ```{r}
 
+linRain <- lm(RainTomorrow ~ RainToday, data = weather_noNA)
+tidy(linRain)
+
+
+
+
 ```
 
 2. For each point in our dataset, what are the fitted probabilities that tomorrow it's going to rain? 
@@ -77,7 +92,12 @@ weather_Portland <- weather_noNA %>%
 - Plot them using an appropriate visualization. What is peculiar about them?
 
 ```{r}
+RainToday <- as.logical(as.character(RainToday))
+RainTomorrow <- as.logical(as.character(RainTomorrow))
 
+ggplot(data=linRain, aes(x = RainToday, y = RainTomorrow)) +
+  geom_point() +
+  geom_smooth(method = "lm")
 ```
 
 > Hint: how many unique values do the predicted probabilities take? What do these value correspond to?
